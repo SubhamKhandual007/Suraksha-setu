@@ -25,14 +25,7 @@ TEAM ATTRIBUTION
 ================================================================================
 
 Suraksha Setu (सुरक्षा सेतु) - Smart Tourist Safety Monitoring & Incident Response System
-Smart India Hackathon 2025 - Problem Statement ID: 25002
-
-Development Team:
-- Airik Majee - Team Lead & Full-Stack Developer
-- Arpita Samantaray - Frontend Developer & UI/UX Design
-- Mayank Raj - Mobile Developer & Real-time Systems
-- Arnab Pal - Database & Security Implementation
-- Arghya Bose - Testing & Documentation
+Smart India Hackathon 2025 
 
 Project Repository: https://github.com/SubhamKhandual007/Suraksha-setu
 Organization: Ministry of Development of North Eastern Region
@@ -65,7 +58,3 @@ PROJECT DETAILS
 ================================================================================
 
 Technology Stack: Node.js, React, React Native, MongoDB, Socket.IO
-Status: Production-ready (95% complete)
-Lines of Code: 5,000+
-Development Timeline: SIH 2025 Timeline
-Last Updated: September 19, 2025
