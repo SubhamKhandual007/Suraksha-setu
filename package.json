@@ -1,0 +1,8 @@
+{
+  "name": "suraksha-setu-root",
+  "version": "1.0.0",
+  "scripts": {
+    "install": "npm install --prefix frontend/tourist",
+    "build": "npm run build --prefix frontend/tourist"
+  }
+}
