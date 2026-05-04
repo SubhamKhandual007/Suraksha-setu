@@ -1,6 +1,6 @@
 # Smart Tourist Safety Monitoring & Incident Response System
 
-## 🎯 SIH 2025 - Problem Statement ID: 25002 - **COMPLETED** ✅
+
 
 A comprehensive digital ecosystem for tourist safety using Real-time Communication, Digital ID System, and GPS Tracking technologies.
 
