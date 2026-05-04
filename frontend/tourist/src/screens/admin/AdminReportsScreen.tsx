@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import {
   Box,
   Card,
-  CardContent,
   Typography,
   Button,
   Grid,
@@ -15,17 +14,13 @@ import {
   Paper,
   Divider,
   CircularProgress,
-  IconButton,
   Chip
 } from '@mui/material';
 import {
   Download,
   Print,
   ArrowBack,
-  TrendingUp,
-  ReportProblem,
-  CheckCircle,
-  DateRange
+  CheckCircle
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { apiService, AlertStats, Activity, incidentAPI, IncidentStats } from '../../services/api';
@@ -79,8 +74,6 @@ const AdminReportsScreen: React.FC = () => {
   }
 
   if (!stats) return <Typography>Error loading report data.</Typography>;
-
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
   return (
     <Box sx={{ p: 4, bgcolor: '#f5f5f5', minHeight: '100vh' }} className="printable-report">

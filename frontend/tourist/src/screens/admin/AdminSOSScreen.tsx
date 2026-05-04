@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Card, CardContent, Chip, Button, IconButton } from '@mui/material';
-import { Warning, CheckCircle, LocationOn, Phone } from '@mui/icons-material';
+import { Box, Typography, Card, CardContent, Chip, Button } from '@mui/material';
+import { Warning, CheckCircle, LocationOn } from '@mui/icons-material';
 import { apiService, EmergencyAlert } from '../../services/api';
 
 const AdminSOSScreen: React.FC = () => {

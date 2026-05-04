@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Card, CircularProgress, Chip } from '@mui/material';
+import { Box, Typography, Card, Chip } from '@mui/material';
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -51,7 +51,7 @@ const MapUpdater = ({ center }: { center: [number, number] }) => {
 const AdminTrackingScreen: React.FC = () => {
   const [zones, setZones] = useState<SafetyZone[]>([]);
   const [tourists, setTourists] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
+  
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -109,8 +109,6 @@ const AdminTrackingScreen: React.FC = () => {
         }
       } catch (err) {
         console.error('Failed to fetch tracking data:', err);
-      } finally {
-        setLoading(false);
       }
     };
 

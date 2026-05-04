@@ -3,7 +3,7 @@ import {
   Box, Typography, Card, CardContent, Chip, Avatar,
   TextField, InputAdornment, Button, IconButton, Tooltip,
   CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions,
-  Divider, Stack, Badge
+  Divider, Stack
 } from '@mui/material';
 import { Search, VerifiedUser, Refresh, QrCode2, Phone, Badge as BadgeIcon, Close, ContentCopy, CheckCircle } from '@mui/icons-material';
 import { QRCodeSVG } from 'qrcode.react';
