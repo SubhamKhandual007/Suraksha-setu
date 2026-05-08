@@ -1,5 +1,7 @@
 const { Server } = require('socket.io');
 const jwt = require('jsonwebtoken');
+const CommunityMessage = require('../models/CommunityMessage');
+const User = require('../models/User');
 
 class SocketHandler {
   constructor(server) {
@@ -20,6 +22,7 @@ class SocketHandler {
     this.userLocations = new Map(); // Store latest user locations
     this.emergencyAlerts = new Map(); // Store emergency alerts
     this.alertCounter = 0; // Track total alerts
+    this.onlineUsers = new Set(); // Track unique online user IDs
     
     this.setupSocketHandlers();
   }
@@ -75,6 +78,7 @@ class SocketHandler {
           
           this.connectedUsers.set(socket.userId, {
             socketId: socket.id,
+            userId: socket.userId,
             userType,
             digitalId: decoded.digitalId,
             connectedAt: new Date()
@@ -88,6 +92,17 @@ class SocketHandler {
 
           console.log(`User authenticated: ${socket.userId} (${userType})`);
           
+          // Join community room
+          socket.join('community');
+          this.onlineUsers.add(socket.userId);
+          
+          // Broadcast user joined to community
+          this.io.to('community').emit('user_status', {
+            userId: socket.userId,
+            status: 'online',
+            onlineCount: this.onlineUsers.size
+          });
+
           // Send current user count to admins
           this.broadcastToAdmins('user_stats', {
             totalConnected: this.connectedUsers.size,
@@ -190,6 +205,34 @@ class SocketHandler {
         socket.emit('online_users', onlineUsers);
       });
 
+      // Handle community messages
+      socket.on('community_message', async (data) => {
+        if (!socket.userId) return;
+
+        try {
+          const { content, messageType = 'text' } = data;
+          
+          // Save to DB
+          const message = await CommunityMessage.create({
+            sender: socket.userId,
+            content,
+            messageType
+          });
+
+          // Populate sender info
+          const populatedMessage = await CommunityMessage.findById(message._id)
+            .populate('sender', 'name digitalId profileImage');
+
+          // Broadcast to all in community room
+          this.io.to('community').emit('new_community_message', populatedMessage);
+          
+          console.log(`Community message from ${socket.userId}: ${content}`);
+        } catch (err) {
+          console.error('Error handling community message:', err);
+          socket.emit('error', { message: 'Failed to send message' });
+        }
+      });
+
       // Handle disconnect
       socket.on('disconnect', () => {
         console.log(`Socket disconnected: ${socket.id}`);
@@ -197,6 +240,19 @@ class SocketHandler {
         if (socket.userId) {
           this.connectedUsers.delete(socket.userId);
           
+          // If no more connections for this user, mark as offline
+          const userStillConnected = Array.from(this.connectedUsers.values())
+            .some(u => u.userId === socket.userId);
+          
+          if (!userStillConnected) {
+            this.onlineUsers.delete(socket.userId);
+            this.io.to('community').emit('user_status', {
+              userId: socket.userId,
+              status: 'offline',
+              onlineCount: this.onlineUsers.size
+            });
+          }
+
           // Update admin dashboards
           this.broadcastToAdmins('user_stats', {
             totalConnected: this.connectedUsers.size,

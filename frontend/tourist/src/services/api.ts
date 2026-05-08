@@ -303,6 +303,22 @@ export const incidentAPI = {
   },
 };
 
+// Community Chat API calls
+export const communityAPI = {
+  getMessages: async (params?: { limit?: number; before?: string }) => {
+    const response = await api.get('/community/messages', { params });
+    return response.data;
+  },
+  reportMessage: async (messageId: string) => {
+    const response = await api.post(`/community/report/${messageId}`);
+    return response.data;
+  },
+  searchMessages: async (q: string) => {
+    const response = await api.get('/community/search', { params: { q } });
+    return response.data;
+  },
+};
+
 // Unified apiService (for backward compatibility with admin components)
 export const apiService = {
   ...authAPI,
@@ -311,6 +327,7 @@ export const apiService = {
   ...paymentAPI,
   ...ambulanceAPI,
   ...incidentAPI,
+  ...communityAPI,
   registerUser: authAPI.register,
 };
 

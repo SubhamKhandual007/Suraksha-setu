@@ -34,6 +34,7 @@ import ReportIncidentScreen from './screens/ReportIncidentScreen';
 import EmergencyServicesScreen from './screens/EmergencyServicesScreen';
 import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
 import ResetPasswordScreen from './screens/ResetPasswordScreen';
+import CommunityChatScreen from './screens/CommunityChatScreen';
 
 const MainLayout = () => {
   return (
@@ -110,6 +111,7 @@ const App: React.FC = () => {
           <Route path="dashboard/detailed" element={<DashboardScreen mode="detailed" />} />
           <Route path="map" element={<MapScreen />} />
           <Route path="chat" element={<ChatScreen />} />
+          <Route path="community-chat" element={<CommunityChatScreen />} />
           <Route path="id" element={<DigitalIDScreen />} />
 
           <Route path="emergency" element={<EmergencyAlertScreen />} />

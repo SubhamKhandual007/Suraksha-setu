@@ -20,7 +20,9 @@ import {
   Home,
   Droplet,
   FlaskConical,
-  CreditCard
+  CreditCard,
+  MessageCircle,
+  Users
 } from 'lucide-react';
 
 import { tokenManager } from '../services/api';
@@ -36,6 +38,7 @@ import profileImg from '../assets/user_profile.png';
 import policeStationImg from '../assets/dashboard/police_station.png';
 import paymentsImg from '../assets/dashboard/payments.png';
 import markerPremium from '../assets/map-marker-premium.png';
+import communityChatImg from '../assets/community_chat.png';
 import BottomNavigation from '../components/BottomNavigation';
 
 // Alias for profile picture usage in detailed view
@@ -198,6 +201,22 @@ const DashboardScreen: React.FC<{ mode?: 'grid' | 'detailed' }> = ({ mode = 'gri
           <div style={{ flex: 1 }}>
             <div style={{ fontWeight: '700', fontSize: '16px' }}>AI Chat Bot SURAKSHA</div>
             <div style={{ fontSize: '12px', opacity: 0.9 }}>Get instant safety assistance</div>
+          </div>
+          <ChevronRight size={20} />
+        </div>
+
+        {/* Tourist Community Section */}
+        <div 
+          onClick={() => navigate('/community-chat')}
+          className="card" 
+          style={{ background: '#6366f1', color: 'white', padding: '20px', display: 'flex', alignItems: 'center', gap: '15px', border: 'none', cursor: 'pointer', marginBottom: '12px' }}
+        >
+          <div style={{ background: 'rgba(255,255,255,0.2)', padding: '10px', borderRadius: '12px' }}>
+            <Users size={24} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: '700', fontSize: '16px' }}>Tourist Community</div>
+            <div style={{ fontSize: '12px', opacity: 0.9 }}>Connect with other tourists</div>
           </div>
           <ChevronRight size={20} />
         </div>
@@ -411,6 +430,15 @@ const DashboardScreen: React.FC<{ mode?: 'grid' | 'detailed' }> = ({ mode = 'gri
         />
 
         <DashboardCard 
+          title="Tourist Community"
+          subtitle="Share tips and connect with others"
+          image={communityChatImg}
+          icon={<Users size={20} />}
+          onClick={() => navigate('/community-chat')}
+          btnText="Join Community"
+        />
+
+        <DashboardCard 
           title="User Profile"
           subtitle="Manage your safety settings"
           image={profileImg}
@@ -432,6 +460,45 @@ const DashboardScreen: React.FC<{ mode?: 'grid' | 'detailed' }> = ({ mode = 'gri
 
 
       </div>
+
+      {/* Floating Community Chat Button */}
+      <button 
+        onClick={() => navigate('/community-chat')}
+        style={{
+          position: 'fixed',
+          bottom: '100px',
+          right: '30px',
+          width: '64px',
+          height: '64px',
+          borderRadius: '50%',
+          background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+          color: 'white',
+          border: 'none',
+          boxShadow: '0 8px 32px rgba(79, 70, 229, 0.4)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          zIndex: 1000,
+          transition: 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1) rotate(5deg)'}
+        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1) rotate(0deg)'}
+        title="Community Chat"
+      >
+        <MessageCircle size={32} />
+        <div style={{
+          position: 'absolute',
+          top: '0',
+          right: '0',
+          width: '18px',
+          height: '18px',
+          background: '#22c55e',
+          borderRadius: '50%',
+          border: '3px solid white',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        }}></div>
+      </button>
     </div>
   );
 };

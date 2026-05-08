@@ -19,6 +19,7 @@ const Alert = require('./models/Alert');
 const jwt = require('jsonwebtoken');
 const activityService = require('./services/activityService');
 const incidentRoutes = require('./routes/incidents');
+const communityChatRoutes = require('./routes/communityChat');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production';
 const generateToken = (userId) => {
@@ -43,14 +44,12 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://apis.google.com", "https://js.stripe.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://js.stripe.com"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      imgSrc: ["'self'", "data:", "https:", "https://www.gstatic.com"],
+      imgSrc: ["'self'", "data:", "https:"],
       connectSrc: [
         "'self'",
-        "https://identitytoolkit.googleapis.com",
-        "https://securetoken.googleapis.com",
         "https://api.stripe.com",
         process.env.WS_URL || "ws://localhost:5000",
         process.env.WSS_URL || "wss://localhost:5000",
@@ -85,52 +84,12 @@ app.use('/api', (req, res, next) => {
 
 app.use('/api/auth', authRoutes);
 
-// Direct Google Login Route in server.js to ensure it's found
-app.post('/api/auth/google-login', async (req, res) => {
-  console.log('Direct Google Login hit!', req.body);
-  try {
-    const { email, name, role = 'admin' } = req.body;
-
-    if (!email) {
-      return res.status(400).json({ success: false, message: 'Email is required' });
-    }
-
-    let user = await User.findOne({ email });
-
-    if (!user) {
-      user = new User({
-        name: name || email.split('@')[0],
-        email,
-        role: role || 'admin',
-        isActive: true,
-        phone: 'Google User',
-      });
-      await user.save();
-    }
-
-    const token = generateToken(user._id);
-
-    res.json({
-      success: true,
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        digitalId: user.digitalId
-      }
-    });
-  } catch (error) {
-    console.error('Direct Google login error:', error);
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
-});
 
 app.use('/api', verificationRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/ambulance', ambulanceRoutes);
 app.use('/api/incidents', incidentRoutes);
+app.use('/api/community', communityChatRoutes);
 
 // Socket.IO stats endpoint
 app.get('/api/socket/stats', (req, res) => {

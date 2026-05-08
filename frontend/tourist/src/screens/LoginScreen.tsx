@@ -3,7 +3,6 @@ import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Shield, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { authAPI, tokenManager } from '../services/api';
 import { refreshAuthStatus } from '../hooks/useAuth';
-import { signInWithGoogle } from '../services/firebase';
 
 const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -54,37 +53,6 @@ const LoginScreen: React.FC = () => {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const user = await signInWithGoogle();
-      if (user && user.email) {
-        const response = await authAPI.googleLogin({
-          email: user.email,
-          name: user.displayName || '',
-          role: role
-        });
-
-        if (response.success && response.token) {
-          tokenManager.setToken(response.token);
-          tokenManager.setUserData(response.user);
-          refreshAuthStatus();
-          if (response.user.role === 'admin') {
-            navigate('/admin/dashboard');
-          } else {
-            navigate('/dashboard');
-          }
-        } else {
-          setError(response.message || 'Google Login failed');
-        }
-      }
-    } catch (err: any) {
-      setError(err.message || 'Google Login failed. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="auth-container">
@@ -216,38 +184,6 @@ const LoginScreen: React.FC = () => {
             </Link>
           </div>
 
-          {role === 'admin' && (
-            <>
-              <div style={{ display: 'flex', alignItems: 'center', margin: '30px 0' }}>
-                <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--border-color)' }}></div>
-                <span style={{ padding: '0 15px', color: 'var(--text-secondary)', fontSize: '13px', fontWeight: '500' }}>OR</span>
-                <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--border-color)' }}></div>
-              </div>
-
-              <button 
-                onClick={handleGoogleLogin} 
-                disabled={loading}
-                className="btn" 
-                style={{ 
-                  width: '100%',
-                  backgroundColor: 'white', 
-                  color: '#444', 
-                  border: '1px solid #dee2e6', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center', 
-                  gap: '12px',
-                  padding: '12px',
-                  borderRadius: '12px',
-                  fontSize: '15px',
-                  fontWeight: '600'
-                }}
-              >
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width="20" />
-                {loading ? 'Processing...' : `Continue with Google`}
-              </button>
-            </>
-          )}
         </div>
       </div>
     </div>

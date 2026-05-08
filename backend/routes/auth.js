@@ -242,60 +242,6 @@ router.get('/users', auth, adminOnly, async (req, res) => {
   }
 });
 
-// @route   POST /api/auth/google-login
-// @desc    Login or Register with Google
-// @access  Public
-router.post('/google-login', async (req, res) => {
-  try {
-    const { email, name, role = 'admin' } = req.body;
-
-    if (!email) {
-      return res.status(400).json({
-        success: false,
-        message: 'Email is required'
-      });
-    }
-
-    // Find user by email
-    let user = await User.findOne({ email });
-
-    if (!user) {
-      // Create new user if they don't exist
-      user = new User({
-        name: name || email.split('@')[0],
-        email,
-        role: role || 'admin',
-        isActive: true,
-        phone: 'Google User', // Placeholder since phone isn't provided by Google Auth by default
-      });
-      await user.save();
-    }
-
-    // Generate JWT token
-    const token = generateToken(user._id);
-
-    res.json({
-      success: true,
-      message: 'Google login successful',
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        digitalId: user.digitalId,
-        createdAt: user.createdAt
-      }
-    });
-
-  } catch (error) {
-    console.error('Google login error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error during Google login'
-    });
-  }
-});
 
 // @route   GET /api/auth/verify/:digitalId
 // @desc    Verify a user by digitalId (Public)
