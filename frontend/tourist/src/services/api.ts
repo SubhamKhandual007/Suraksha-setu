@@ -151,8 +151,8 @@ export const authAPI = {
     return response.data;
   },
   
-  googleLogin: async (googleData: { email: string; name: string; role?: string }) => {
-    const response = await api.post('/auth/google-login', googleData);
+  firebaseLogin: async (token: string, role: string = 'admin') => {
+    const response = await api.post('/auth/firebase-login', { token, role });
     return response.data;
   },
 

@@ -28,6 +28,11 @@ const UserSchema = new mongoose.Schema({
     enum: ['tourist', 'admin', 'authority'],
     default: 'tourist'
   },
+  firebaseUid: {
+    type: String,
+    unique: true,
+    sparse: true
+  },
   digitalId: {
     type: String,
     unique: true,

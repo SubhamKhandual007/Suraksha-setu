@@ -3,6 +3,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
+const admin = require('firebase-admin');
 const User = require('../models/User');
 const { auth, adminOnly } = require('../middleware/auth');
 const verificationService = require('../services/verificationService');
@@ -11,6 +12,17 @@ const router = express.Router();
 
 // JWT Secret (in production, use environment variable)
 const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production';
+
+// Initialize Firebase Admin SDK (only once)
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert({
+      projectId: process.env.FIREBASE_PROJECT_ID || 'tour-safe-6ce22',
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL || '',
+      privateKey: (process.env.FIREBASE_PRIVATE_KEY || '').replace(/\\n/g, '\n'),
+    }),
+  });
+}
 
 // Generate JWT Token
 const generateToken = (userId) => {
@@ -178,6 +190,77 @@ router.post('/login', [
     res.status(500).json({
       success: false,
       message: 'Server error during login'
+    });
+  }
+});
+
+// @route   POST /api/auth/firebase-login
+// @desc    Login with Firebase (Google provider)
+// @access  Public
+router.post('/firebase-login', async (req, res) => {
+  try {
+    const { token, role = 'admin' } = req.body;
+    
+    if (!token) {
+      return res.status(400).json({ success: false, message: 'Firebase token is required' });
+    }
+
+    // Verify Firebase ID token
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    const { name, email, picture, uid: firebaseUid } = decodedToken;
+
+    // Find or create user
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // Create new user if not exists (Auto-register Firebase users as requested role)
+      user = new User({
+        name: name || email.split('@')[0],
+        email,
+        password: crypto.randomBytes(16).toString('hex'), // Random password for Firebase users
+        role: role || 'admin',
+        isActive: true,
+        firebaseUid
+      });
+      await user.save();
+    } else {
+      // Update firebaseUid if not present
+      if (!user.firebaseUid) {
+        user.firebaseUid = firebaseUid;
+        await user.save();
+      }
+      
+      // Ensure role matches for admin portal if specified
+      if (role === 'admin' && user.role !== 'admin') {
+         return res.status(403).json({ 
+           success: false, 
+           message: 'This account is not authorized as an Admin' 
+         });
+      }
+    }
+
+    // Generate JWT token
+    const jwtToken = generateToken(user._id);
+
+    res.json({
+      success: true,
+      message: 'Firebase login successful',
+      token: jwtToken,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        digitalId: user.digitalId,
+        createdAt: user.createdAt
+      }
+    });
+
+  } catch (error) {
+    console.error('Firebase login error:', error);
+    res.status(401).json({
+      success: false,
+      message: 'Invalid Firebase token'
     });
   }
 });
