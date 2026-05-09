@@ -32,43 +32,32 @@ const PORT = process.env.PORT || 5000;
 // 1. App Settings
 app.set('trust proxy', 1); // Trust first proxy (Render/Vercel)
 
-// 2. CORS Configuration
-const allowedOrigins = [
-  'https://suraksha-setu-oxkw.vercel.app',
-  'https://suraksha-setu-tourist.vercel.app',
-  'https://suraksha-setu-admin.vercel.app',
-  'http://localhost:3000',
-  'http://localhost:5173',
-  'http://localhost:5174'
-];
-
+// 2. CORS Configuration (Extremely Permissive for Debugging)
 app.use((req, res, next) => {
   const origin = req.headers.origin;
+  console.log(`[CORS DEBUG] Request from Origin: ${origin}, Method: ${req.method}, Path: ${req.path}`);
+  
   if (origin) {
-    const isAllowed = allowedOrigins.includes(origin) || origin.endsWith('.vercel.app');
-    if (isAllowed) {
-      res.setHeader('Access-Control-Allow-Origin', origin);
-    }
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', '*');
   }
+  
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Access-Control-Allow-Headers');
+  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Access-Control-Allow-Headers');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Max-Age', '86400'); // Cache preflight for 24 hours
   
   if (req.method === 'OPTIONS') {
-    return res.status(200).json({});
+    console.log(`[CORS DEBUG] Responding to OPTIONS preflight`);
+    return res.status(200).end();
   }
   next();
 });
 
-// Also use cors package as a backup/standard
+// Standard CORS as backup
 app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
-      callback(null, true);
-    } else {
-      callback(null, false);
-    }
-  },
+  origin: true,
   credentials: true
 }));
 
