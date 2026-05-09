@@ -4,7 +4,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const path = require('path');
 const { createServer } = require('http');
-require('dotenv').config(); // Look in the current directory (standard for Render)
+require('dotenv').config(); 
 
 // Import database connection and routes
 const connectDB = require('./config/database');
@@ -29,23 +29,15 @@ const generateToken = (userId) => {
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// 1. ABSOLUTE FIRST: MANUAL CORS HEADERS
-// This ensures that even if the app crashes later, the browser gets the CORS headers
+// 1. DYNAMIC CORS - ALLOWS ANY ORIGIN (Necessary for Vercel Preview URLs)
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  const allowedOrigins = [
-    'https://suraksha-setu-oxkw.vercel.app',
-    'https://suraksha-setu-tourist.vercel.app',
-    'https://suraksha-setu-admin.vercel.app',
-    'http://localhost:3000',
-    'http://localhost:5173',
-    'http://localhost:5174'
-  ];
-
-  if (origin && (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app'))) {
+  
+  // Reflect the origin back to the browser
+  if (origin) {
     res.setHeader('Access-Control-Allow-Origin', origin);
   } else {
-    res.setHeader('Access-Control-Allow-Origin', 'https://suraksha-setu-oxkw.vercel.app');
+    res.setHeader('Access-Control-Allow-Origin', '*');
   }
 
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
