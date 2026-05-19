@@ -89,15 +89,6 @@ npm start
 # ✅ Frontend runs on http://localhost:3000
 ```
 
-## 👥 **SIH 2025 TEAM MEMBERS**
-
-### **🏆 Development Team:**
-- **Airik Majee** - *Team Lead & Full-Stack Developer*
-- **Arpita Samantaray** - *Frontend Developer & UI/UX Design*
-- **Mayank Raj** - *Mobile Developer & Real-time Systems*
-- **Arnab Pal** - *Database & Security Implementation*
-- **Arghya Bose** - *Testing & Documentation*
-
 ## 🏆 **SIH 2025 SUBMISSION STATUS** - **READY FOR PRESENTATION** 🎯
 
 ### **✅ COMPETITION REQUIREMENTS MET:**
